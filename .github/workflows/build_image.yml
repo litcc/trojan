@@ -1,0 +1,55 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build Image
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ package ]
+  pull_request:
+    branches: [ package ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    name: Build docker image
+    runs-on: ${{ matrix.os }} # runs a test on Ubuntu, Windows and macOS
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+      # 配置一系列变量
+      - name: Prepare Image Tags
+        run: |
+          echo "DOCKERFILE_PATH=Dockerfile" >> $GITHUB_ENV
+          echo "TAG_GPR_LATEST=ghcr.io/litcc/trojan:latest" >> $GITHUB_ENV
+          echo "TAG_APR_LATEST=registry.cn-hongkong.aliyuncs.com/lovol-image/trojan:latest" >> $GITHUB_ENV
+      # 获取子项目文件
+      - name: Git Submodule Update
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive
+      # 部署打包环境
+      - name: Set Build Tool
+        run: |
+          curl -s https://lovol-file.oss-cn-hongkong.aliyuncs.com/binary-file/shell/install-nerdctl.sh | bash
+          sudo nohup buildkitd &
+      # 开始打包
+      - name: Build Images
+        run: |
+          sudo nerdctl build --file ${{ env.DOCKERFILE_PATH }} --tag ${{ env.TAG_GPR }} .
+      # 上传镜像
+      - name: Publish to Dockerhub
+        run: |
+          sudo nerdctl login --u '${{secrets.G_PACKAGE_USERNAME}}' -p '${{secrets.G_PACKAGE_PASSWORD}}' ghcr.io
+          sudo nerdctl login --u '${{secrets.A_IMAGE_USERNAME}}' -p '${{secrets.A_IMAGE_PASSWORD}}' registry.cn-hongkong.aliyuncs.com
+          sudo nerdctl push ${{ env.TAG_GPR_LATEST }}
+          sudo nerdctl tag ${{ env.TAG_GPR_LATEST }} ${{ env.TAG_APR_LATEST }}
+          sudo nerdctl push ${{ env.TAG_GPR_LATEST }}
+
