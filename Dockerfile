@@ -2,8 +2,8 @@ FROM alpine:3.11
 LABEL maintainer="litcc 'i@litcc.com'"
 
 COPY . trojan
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
-    && apk add --no-cache --virtual .build-deps \
+## sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+RUN apk add --no-cache --virtual .build-deps \
         build-base \
         cmake \
         boost-dev \
