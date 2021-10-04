@@ -43,7 +43,7 @@ jobs:
       # 开始打包
       - name: Build Images
         run: |
-          sudo nerdctl build --file ${{ env.DOCKERFILE_PATH }} --tag ${{ env.TAG_GPR }} .
+          sudo nerdctl build --file ${{ env.DOCKERFILE_PATH }} --tag ${{ env.TAG_GPR_LATEST }} .
       # 上传镜像
       - name: Publish to Dockerhub
         run: |
