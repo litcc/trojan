@@ -27,7 +27,7 @@ jobs:
       # 配置一系列变量
       - name: Prepare Image Tags
         run: |
-          echo "DOCKERFILE_PATH=/home/runner/work/trojan/trojan/Dockerfile" >> $GITHUB_ENV
+          echo "DOCKERFILE_PATH=./Dockerfile" >> $GITHUB_ENV
           echo "TAG_GPR_LATEST=ghcr.io/litcc/trojan:latest" >> $GITHUB_ENV
           echo "TAG_APR_LATEST=registry.cn-hongkong.aliyuncs.com/lovol-image/trojan:latest" >> $GITHUB_ENV
       # 获取子项目文件
@@ -43,8 +43,6 @@ jobs:
       # 开始打包
       - name: Build Images
         run: |
-          pwd
-          ls
           sudo nerdctl build --file ${{ env.DOCKERFILE_PATH }} --tag ${{ env.TAG_GPR }} .
       # 上传镜像
       - name: Publish to Dockerhub
