@@ -51,5 +51,5 @@ jobs:
           sudo nerdctl login -u '${{secrets.A_IMAGE_USERNAME}}' -p '${{secrets.A_IMAGE_PASSWORD}}' registry.cn-hongkong.aliyuncs.com
           sudo nerdctl push ${{ env.TAG_GPR_LATEST }}
           sudo nerdctl tag ${{ env.TAG_GPR_LATEST }} ${{ env.TAG_APR_LATEST }}
-          sudo nerdctl push ${{ env.TAG_GPR_LATEST }}
+          sudo nerdctl push ${{ env.TAG_APR_LATEST  }}
 
